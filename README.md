@@ -6,7 +6,7 @@ View the site on [Heroku](https://water-app-2933b3044c55.herokuapp.com/).
 
 ## Description
 
-The Water App is a Django-based web application designed to crowdsource the mapping and approval of water stations within buildings.
+Water on Grounds is a Django-based web application designed to crowdsource the mapping and approval of water stations within buildings.
 
 The app allows users to submit information about water stations, including their location and type. Admin users have the ability to review and approve submitted water stations, ensuring accuracy and appropriateness. 
 
