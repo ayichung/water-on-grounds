@@ -1,0 +1,70 @@
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% bootstrap_messages %}
+
+<p class="mt-md text-center" style="padding: 18px 18px 0px 18px; font-size:0.8rem">To see your location on the map, allow location permissions when prompted by your browser.</p>
+<hr>
+
+{% if stations %}
+    <h3 style="margin-bottom: 12px; padding: 18px;">{{ stations.0.building.name }}</h3>
+    <div class="accordion" id="accordionExample">
+    {% for floor in floors %}
+        <div class="accordion-item">
+            <h4 class="accordion-header" id="heading{{forloop.counter}}">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{forloop.counter}}" aria-expanded="false" aria-controls="collapse{{forloop.counter}}">
+                    {% if floor.floor == 0 %}
+                        Basement
+                    {% else %}
+                        Floor {{ floor.floor }}
+                    {% endif %}
+                </button>
+            </h4>
+            <div id="collapse{{forloop.counter}}" class="accordion-collapse collapse" aria-labelledby="heading{{forloop.counter}}" data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                {% for station in stations %}
+                    {% if station.floor == floor.floor %}
+                        <div style="max-width: 45%; min-width: 35%;">
+                            <b>Station {{ station.id }}</b>
+                        </div>
+                                <ul class="station-info-list">
+                                    <li>
+                                        <b>Area: </b>
+                                        {% if station.cardinal == "c" %}
+                                            Central area of the building
+                                        {% elif station.cardinal == "n" %}
+                                            North side of the building
+                                        {% elif station.cardinal == "s" %}
+                                            South side of the building
+                                        {% elif station.cardinal == "e" %}
+                                            East side of the building
+                                        {% elif station.cardinal == "w" %}
+                                            West side of the building
+                                        {% endif %}
+                                    </li>
+                                    <li>
+                                        <b>Dispenser: </b>
+                                        {% if station.traditional and station.bottle %}
+                                            Drinking and bottle refill
+                                        {% elif station.traditional %}
+                                            Drinking
+                                        {% else %}
+                                            Bottle refill
+                                        {% endif %}
+                                        <br/><br/>
+                                    </li>
+                                </ul>
+                    {% endif %}
+                {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+{% else %}
+    <p style="padding: 18px; text-align: center;">Select a pin to see water stations in the building</p>
+    <p class="mt-md text-center" style="padding: 0px 18px 18px 18px;">
+        This app currently covers all water stations on Engineering Way (from Rice through Thornton Hall).
+        <br>The scope may expand in the future to cover further ground.
+    </p>
+{% endif %}

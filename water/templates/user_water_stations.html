@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+    <h2 class="text-center pt-2">Your Submitted Water Stations</h2>
+    {% if user_water_stations %}
+        <div class="container">
+            <div class="row">
+
+                <div class="col-md-6">
+                    <h4 class="text-center">Approved Stations</h4>
+                    <div class="bg-light text-black text-center mx-auto w-100 border border-2 mt-4">
+                        <ul class="list-unstyled">
+                            {% for station in user_water_stations %}
+                                {% if station.approved %}
+                                    <li class="mb-4 mt-2">
+                                        Building: {{ station.building.name }}
+                                        <br>
+                                        Floor: {{ station.floor }}
+                                        <br>
+                                        Area: {{ station.get_cardinal_display }}
+                                        <br>
+                                        Dispenser:
+                                        {% if station.traditional and station.bottle %}
+                                            Drinking and bottle refill
+                                        {% elif station.traditional %}
+                                            Drinking
+                                        {% else %}
+                                            Bottle refill
+                                        {% endif %}
+                                        <br>
+                                        <span style="color: green; font-weight: bold;">(Approved)</span>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <h4 class="text-center">Pending Approval</h4>
+                    <div class="bg-light text-black text-center mx-auto w-100 border border-2 mt-4">
+                        <ul class="list-unstyled">
+                            {% for station in user_water_stations %}
+                                {% if not station.approved %}
+                                    <li class="mb-4 mt-2">
+                                        Building: {{ station.building.name }}
+                                        <br>
+                                        Floor: {{ station.floor }}
+                                        <br>
+                                        Area: {{ station.get_cardinal_display }}
+                                        <br>
+                                        Dispenser: {{ station.get_dispenser_display }}
+                                        <br>
+                                        <span style="color: red; font-weight: bold;">(Pending Approval)</span>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <p class="text-center pt-2">You haven't submitted any water stations yet.</p>
+    {% endif %}
+    <br>
+    <div class="text-center"><a href="{% url 'submit_water_station' %}" class="btn btn-primary">Back to Submit a Station</a></div>
+    <br>
+    <div class="text-center"><a href="{% url 'home' %}" class="btn btn-secondary">Back to Home</a></div>
+    <br>
+{% endblock %}

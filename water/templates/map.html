@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% load static %}
+
+<!--REFERENCE: https://developers.google.com/maps/documentation/javascript/advanced-markers/start-->
+{% block content %}
+    <link rel="stylesheet" type="text/css" href="{% static 'water/map_style.css' %}"/> 
+    <div class="flex-container">
+        <div id="station-menu">
+            {% include "map_stations.html" %}
+        </div>
+        <div id="map-container">
+            <!--map will be rendered here-->
+        </div>
+    </div>
+    <script>
+        // REFERENCE: https://developers.google.com/maps/documentation/javascript/controls
+        // REFERENCE: https://developers.google.com/maps/documentation/cloud-customization/map-styles
+        // REFERENCE: https://developers.google.com/maps/documentation/javascript/examples/place-details
+        // REFERENCE: https://developers.google.com/maps/documentation/javascript/examples/event-simple
+        window.CSRF_TOKEN = "{{ csrf_token }}";
+        function initMap() {
+            // render map
+            const map = new google.maps.Map(document.getElementById("map-container"), {
+                center: {lat:38.0316 , lng: -78.5108},
+                zoom: 17.5,
+                disableDefaultUI: true,
+                mapId: "6db324c6c3e77cd0",
+                clickableIcons: false,
+            });
+            // render markers
+            let markers = [];
+            let infoWindow = new google.maps.InfoWindow();
+            let i = 0;
+            // not an error, safe to ignore
+            {% for building in buildings %}
+                // create marker
+                markers[i] = new google.maps.Marker({
+                    map: map,
+                    position: { lat: {{building.lat}}, lng: {{building.lng}} },
+                });
+                markers[i].index = i;
+                markers[i].addListener("click", () => {
+                    $.ajax({
+                        type: "GET",
+                        url: "{% url 'map_stations' place_id=building.place_id %}",
+                        data: {
+                            "csrfmiddlewaretoken": "{{csrf_token}}",
+                        },
+                        success: function(res) {
+                            $("#station-menu").html(res);
+                        },
+                    });
+                })
+                // add info window
+                // REFERENCE: https://stackoverflow.com/questions/8325736/creating-markers-in-loop-infowindow-does-not-open-when-inside-an-click-listene
+                google.maps.event.addListener(markers[i], "click", function () {
+                    infoWindow.setContent("<p>{{building.name}}</p><a target='_blank' href='https://www.google.com/maps/search/?api=1&query={{building.lat}}%2C{{building.lng}}'>Get directions</a>");
+                    infoWindow.open(map, markers[this.index]);
+                });
+                i++;
+            {% endfor %}
+            // geolocate user
+            const successCallback = (position) => {
+                const pos = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude,
+                };
+                const userMarker = new google.maps.Marker ({
+                    map: map,
+                    position: pos,
+                    title: "You are here",
+                    icon: {
+                        path: google.maps.SymbolPath.CIRCLE,
+                        scale: 10,
+                        fillOpacity: 1,
+                        strokeWeight: 2,
+                        fillColor: '#5384ED',
+                        strokeColor: '#ffffff',
+                    },
+                });
+                const userInfo = new google.maps.InfoWindow({
+                    content: "You are here",
+                });
+                userMarker.addListener("click", () => {
+                    userInfo.open({
+                        anchor: userMarker,
+                        map,
+                    });
+                });
+            };
+
+            const errorCallback = (error) => {
+                console.log(error);
+            };
+
+            navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key={{key}}&callback=initMap" async defer></script>
+    <script>
+        if ( document.getElementById("navitem-home").classList.contains('active') ) {
+            document.getElementById("navitem-home").classList.remove('active');
+        }
+        if ( ! document.getElementById("navitem-map").classList.contains('active') ) {
+            document.getElementById("navitem-map").classList.add('active');
+        }
+        if ( document.getElementById("navitem-add").classList.contains('active') ) {
+            document.getElementById("navitem-add").classList.remove('active');
+        }
+        if ( document.getElementById("navitem-approve").classList.contains('active') ) {
+            document.getElementById("navitem-approve").classList.remove('active');
+        }
+    </script>
+{% endblock %}

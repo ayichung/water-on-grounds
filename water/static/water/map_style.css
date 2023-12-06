@@ -1,0 +1,31 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+.flex-container {
+    height: calc(100% - 56px);
+    display: flex;
+    overflow: auto;
+}
+
+#map-container {
+    flex: 1 1 30%;
+}
+
+#station-menu {
+    flex: 1 1 0;
+    overflow-y: auto;
+    max-width: 495px;
+}
+
+.station-item {
+    padding: 14px;
+    display: flex;
+}
+
+.station-info-list {
+    margin-bottom: 12;
+    list-style-type: none;
+}

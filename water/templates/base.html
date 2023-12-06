@@ -1,0 +1,78 @@
+{% load bootstrap5 %}
+{% load socialaccount %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% bootstrap_messages %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        {% if title %}
+            <title>{{ title }} | Water App</title>
+        {% else %}
+            <title>Water App</title>
+        {% endif %}
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light" style="background-color: #e3f2fd;">
+            <div class="container-fluid">
+                <a class="navbar-brand text-primary" href="{% url 'home' %}">Water App</a>
+                <div class="order-lg-4 order-0" style="margin-left: auto;">
+                    {% if user.is_authenticated %}
+                    <span style="font-size: 14px;" class="navbar-brand text-secondary">{{ user.first_name }} ({{ user.email }})</span>
+                    <span style="font-size: 14px; font-weight: bold;" class="navbar-brand text-secondary">
+                        {% if admin %}
+                            ADMIN
+                        {% endif %}
+                    </span>
+                {% endif %}
+                </div>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" id="navitem-home" href="{% url 'home' %}">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="navitem-map" href="{% url 'map' %}">Map</a>
+                        </li>
+                        {% if user.is_authenticated %} 
+                            <li class="nav-item">
+                                <a class="nav-link" id="navitem-add" href="{% url 'submit_water_station' %}">
+                                    {% if admin %}
+                                    Add a New Water Station
+                                    {% else %}
+                                    Submit a New Water Station
+                                    {% endif %}
+                                </a>
+                            </li>
+                            {% if admin %}
+                                <li class="nav-item">
+                                    <a class="nav-link" id="navitem-approve" href="{% url 'approve_water_station' %}">Approve Water Stations</a>
+                                </li>
+                            {% else %}
+                                <li class="nav-item">
+                                    <a class="nav-link" id="navitem-approve" href="{% url 'user_water_stations' %}">View Submitted Stations</a>
+                                </li>
+                            {% endif %}
+                        {% endif %}
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        {% if user.is_authenticated %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        {% block content %}{% endblock %}
+    </body>
+</html>

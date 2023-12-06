@@ -1,0 +1,90 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+    <!--temp styling for readability-->
+    <style>
+        .no-margin {
+            margin: 8px;
+        }
+    </style>
+    <script>
+        if ( document.getElementById("navitem-home").classList.contains('active') ) {
+            document.getElementById("navitem-home").classList.remove('active');
+        }
+        if ( document.getElementById("navitem-map").classList.contains('active') ) {
+            document.getElementById("navitem-map").classList.remove('active');
+        }
+        if ( ! document.getElementById("navitem-add").classList.contains('active') ) {
+            document.getElementById("navitem-add").classList.add('active');
+        }
+        if ( document.getElementById("navitem-approve").classList.contains('active') ) {
+            document.getElementById("navitem-approve").classList.remove('active');
+        }
+    </script>
+    {% if admin %}
+        <h2 class="text-center pt-2">Add a New Water Station</h2>
+        <p class="text-center">You can add a new water station for this app. It will appear on the map immediately.</p>
+        <div class="text-center mb-2"><a href="{% url 'approve_water_station' %}" class="btn btn-primary">Manage user-submitted water stations</a></div>
+    {% else %}
+        <h2 class="text-center pt-2">Submit a New Water Station</h2>
+        <p class="text-center">You can submit a new water station for this app. If an admin approves the station, it will appear on the map.</p>
+        {% if user_water_stations %}
+        <div class="text-center mb-2"><a href="{% url 'user_water_stations' %}" class="btn btn-primary">View your submitted water stations</a></div>
+        {% else %}
+        <div class="text-center mb-2"><a href="{% url 'user_water_stations' %}" class="btn btn-secondary">View your submitted water stations</a></div>
+        {% endif %}
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        <div class="bg-light text-black text-center mx-auto w-75 border border-2 mt-4">
+            <div class="mb-4 mt-4">
+                {{ form.building.label_tag }}
+                <div class="no-margin">
+                {{ form.building }}
+                </div>
+            </div>
+            <div class="mb-4">
+                {{ form.floor.label_tag }}
+                <div class="no-margin">
+                {{ form.floor }}
+                </div>
+            </div>
+            <div class="mb-4">
+                {{ form.cardinal.label_tag }}
+                <div class="no-margin form-check">
+                {% for choice in form.cardinal %}
+                {{ choice }}
+                {% endfor %}
+                </div>
+            </div>
+            <div class="mb-4">
+                <label>What type of dispensers does the station have?</label>
+                <div class="no-margin text-center">
+                    <div class="no-margin">
+                        {{ form.traditional }}
+                        {{ form.traditional.label_tag }}
+                    </div>
+                    <div class="no-margin">
+                        {{ form.bottle }}
+                        {{ form.bottle.label_tag }}
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-primary mb-4" type="submit" id="submit-btn">Submit</button>
+        </div>
+    </form>
+    <div class="text-center mb-4">
+        <a href="{% url 'home' %}" class="btn btn-secondary">Back to Home</a>
+    </div>
+    <script defer>
+        document.getElementById("submit-btn").addEventListener('click', (e) => {
+            document.getElementById("id_bottle").setCustomValidity("");
+            if (!document.getElementById("id_bottle").checked && !document.getElementById("id_traditional").checked) {
+                e.preventDefault();
+                document.getElementById("id_bottle").setCustomValidity("At least one dispenser type must be selected");
+                document.getElementById("id_bottle").reportValidity();
+            }
+        })
+    </script>
+{% endblock %}

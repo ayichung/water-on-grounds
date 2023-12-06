@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load socialaccount %}
+
+{% block content %}
+<script>
+    if ( document.getElementById("navitem-map").classList.contains('active') ) {
+        document.getElementById("navitem-map").classList.remove('active');
+    }
+    if ( ! document.getElementById("navitem-home").classList.contains('active') ) {
+        document.getElementById("navitem-home").classList.add('active');
+    }
+    if ( document.getElementById("navitem-add").classList.contains('active') ) {
+        document.getElementById("navitem-add").classList.remove('active');
+    }
+    if ( document.getElementById("navitem-approve").classList.contains('active') ) {
+        document.getElementById("navitem-approve").classList.remove('active');
+    }
+</script>
+<div class="h-75 d-flex align-items-center justify-content-center align-items-center text-center flex-column">     
+    <h2 class="p-2">
+        Welcome to Water App,<br>an app for finding water stations on grounds.
+    </h2>
+    {% if user.is_authenticated %}
+        {% if admin %}
+            <!-- <div class="p-2">Welcome, admin user {{ user.first_name }} ({{ user.email }}).</div> -->
+            <div class="p-2"><a href="{% url 'submit_water_station' %}" class="btn btn-primary">Add a New Water Station</a></div> 
+            <a href="{% url 'approve_water_station' %}" class="btn btn-primary" >Approve Water Stations</a>
+        {% else %}
+            <!-- <div class="p-2">Welcome, user {{ user.first_name }} ({{ user.email }}).</div> -->
+            <div class="p-2"><a href="{% url 'submit_water_station' %}" class="btn btn-primary">Submit a New Water Station</a></div> 
+        {% endif %}
+        <div class="p-2"><a class="btn btn-primary" href="{% url 'map' %}"> Go to Map </a></div>
+        <div class="p-2"><a class="btn btn-secondary" href="{% url 'logout' %}">Logout</a></div>
+    {% else %}
+        <div class="p-2"><a class="btn btn-primary" href="{% url 'map' %}"> Go to Map </a></div>
+        <form action="{% provider_login_url 'google' %}" method="post">
+            {% csrf_token %}
+            <div class="text-center">
+                <button class="btn btn-primary" type="submit">Login with Google</button>
+            </div>
+        </form>
+        <p class="text-center" style="font-size: 14px;">You are not currently logged in.<br>To submit a new water station, please log in.</p>
+    {% endif %}
+</div>
+
+{% endblock %}

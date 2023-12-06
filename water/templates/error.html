@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load socialaccount %}
+
+
+{% block content %}
+<p class="text-center pt-2"> You don't have access to this page because your account doesn't have permission or you are not logged in. </p>
+
+<form action="{% provider_login_url 'google' %}" method="post">
+    {% csrf_token %}
+    <div class="text-center my-3">
+        <button class="btn btn-primary" type="submit">Login with Google</button>
+    </div>
+</form>
+
+<div class="text-center"><a href="{% url 'home' %}" class="btn btn-secondary">Go back to home</a></div>
+{% endblock %}

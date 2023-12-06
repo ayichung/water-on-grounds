@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 class="text-center">Approve or Reject User-Submitted Water Stations</h2>
+<script>
+    if ( document.getElementById("navitem-home").classList.contains('active') ) {
+        document.getElementById("navitem-home").classList.remove('active');
+    }
+    if (document.getElementById("navitem-map").classList.contains('active') ) {
+        document.getElementById("navitem-map").classList.remove('active');
+    }
+    if ( document.getElementById("navitem-add").classList.contains('active') ) {
+        document.getElementById("navitem-add").classList.remove('active');
+    }
+    if ( ! document.getElementById("navitem-approve").classList.contains('active') ) {
+        document.getElementById("navitem-approve").classList.add('active');
+    }
+</script>
+{% if unapproved_water_stations %}
+    <form method="post">
+        {% csrf_token %}
+        <div class="bg-light text-black text-center mx-auto w-75 border border-2 mt-4">
+            <ul class="list-unstyled">
+                {% for water_station in unapproved_water_stations %}
+                    <li class="mb-4 mt-2">
+                        Submitted by: {{ water_station.user.email }}
+                        <br>
+                        Building: {{ water_station.building }}
+                        <br>
+                        Floor: {{ water_station.floor }}
+                        <br>
+                        Area: 
+                        {% if water_station.cardinal == "c" %}
+                            Central area of the building
+                        {% elif water_station.cardinal == "n" %}
+                            North side of the building
+                        {% elif water_station.cardinal == "s" %}
+                            South side of the building
+                        {% elif water_station.cardinal == "e" %}
+                            East side of the building
+                        {% elif water_station.cardinal == "w" %}
+                            West side of the building
+                        {% endif %}
+                        <br>
+                        Dispenser types:
+                        {% if water_station.bottle %}
+                        Bottle
+                        {% endif %}
+                        {% if water_station.traditional %}
+                        Traditional
+                        {% endif %}
+                        <!-- Add checkboxes with labels for "Approve" and "Reject" -->
+                        <div>
+                            <input type="radio" name="radio-group-{{ water_station.id }}" value="approved" id="approve-{{ water_station.id }}">
+                            <label for="approve-{{ water_station.id }}">Approve</label>
+                            <input type="radio" name="radio-group-{{ water_station.id }}" value="rejected" id="reject-{{ water_station.id }}">
+                            <label for="reject-{{ water_station.id }}">Reject</label>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+            <button type="submit" class="btn btn-primary mb-4">Submit</button>
+        </div>
+    </form>
+{% else %}
+    <p class="text-center pt-2">No forms currently need approval review</p>
+{% endif %}
+
+<div class="text-center"><a href="{% url 'home' %}" class="btn btn-secondary">Back to Home</a></div>
+{% endblock %}
