@@ -1,6 +1,6 @@
 # Water on Grounds
 
-_**After 12/10/23, this link may no longer be functional.**_
+_**As of 12/10/23, this link is no longer functional.**_
 
 View the site on [Heroku](https://water-app-2933b3044c55.herokuapp.com/).
 
